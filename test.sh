@@ -1,0 +1,1 @@
+python3 -u train_reranker.py --backbone deit --aggregation=gem  --save_dir test --infer_batch_size 96 --num_local 1200 --num_local_nomask 1000  --resume logs/GCNrerank_2023-09-19_09-13-17/best_model.pth --fc_output_dim 256  --rerank_batch_size 2 --test
