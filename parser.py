@@ -1,17 +1,13 @@
 import os
 import torch
 import argparse
-
-import parser
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Benchmarking Visual Geolocalization",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # Training parameters
     parser.add_argument("--train_batch_size", type=int, default=8,
                         help="Number of triplets (query, pos, negs) in a batch. Each triplet consists of 12 images")
-    parser.add_argument("--infer_batch_size", type=int, default=96,
+    parser.add_argument("--infer_batch_size", type=int, default=256,
                         help="Batch size for inference (caching and testing)")
     parser.add_argument("--rerank_batch_size", type=int, default=8,
                         help="Batch size for inference (caching and testing)")
@@ -23,18 +19,12 @@ def parse_arguments():
                         help="determine how the adjacency matrix is calculated", choices=["l2", "dot"])
     parser.add_argument("--num_classes", type=int, default=2, help="The final number of classifications")
     parser.add_argument("--num_graph_layers", type=int, default=3, help="determine how many graph layers be use")
-    parser.add_argument("--attention_depth", type=int, default=1,
-                        help="determine  how many layers of attention the graph  uses per layer")
-    parser.add_argument("--aggregation_select", type=str, default="gem", help="from (12,500,128) to (12,500,1)",
-                        choices=["gem", "spoc", "mac"])
     parser.add_argument("--criterion", type=str, default='triplet', help='loss to be used',
                         choices=["triplet", "sare_ind", "sare_joint"])
     parser.add_argument("--margin", type=float, default=0.1,
                         help="margin for the triplet loss")
     parser.add_argument("--temperature", type=float, default=0.5,
                         help="graph temperature")
-    parser.add_argument("--cross_limit", type=int, default=30,
-                        help="number patches when cross")
     parser.add_argument("--runpath", type=str, default="runs", help="Path to save runs to.")
     parser.add_argument("--epochs_num", type=int, default=50,
                         help="number of epochs to train for")
@@ -65,7 +55,7 @@ def parse_arguments():
                         help='use all layer for local feature')
     parser.add_argument('--rerank_loss', type=str, default='ce',
                         help='use triplet loss for rerank')
-    parser.add_argument('--rerank_model', type=str, default="GCNRerank", choices=["r2former", "GCNRerank","global_rerank"],
+    parser.add_argument('--rerank_model', type=str, default="GCNRerank", choices=[ "GCNRerank"],
                         help='use triplet loss for rerank')
     parser.add_argument('--schedule', default=[10, 20], nargs='*', type=int,
                         help='learning rate schedule (when to drop lr by 10x)')

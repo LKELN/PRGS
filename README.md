@@ -33,8 +33,9 @@ The dataset should be organized in a directory tree as such:
 ```
 
 ## Train in MSLS
-First, you should get DeiT backbone from [msls_v2_deits.pth](https://drive.google.com/file/d/1XBNjbbNUrp6NIv6REHrMLdHFw5joustx/view?usp=sharing), save to resume directory.
-Then, you should perform pre_compute_mining to get hard negative list. 
+For using MSLS dataset, you should get directory mapillary_sls from [msls](https://github.com/mapillary/mapillary_sls.git) to use MSLS datasets. And then
+you should get DeiT backbone from [msls_v2_deits.pth](https://drive.google.com/file/d/1XBNjbbNUrp6NIv6REHrMLdHFw5joustx/view?usp=sharing), save to resume directory.
+Lastly, you should perform pre_compute_mining to get hard negative list. 
 ```commandline
 python pre_compute_mining.py
 ```
@@ -43,7 +44,7 @@ python pre_compute_mining.py
 bash train_reranking.sh
 ```
 ## Test in MSLS
-You should get our model that train in msls from [msls_train_prgs.pt](https://drive.google.com/file/d/1TZ3yxnXsHK27N13LfpmF_U3t4kNjPwm2/view?usp=drive_link),save to resume directory.
+You should get our model that trained in msls from [msls_train_prgs.pt](https://drive.google.com/file/d/1TZ3yxnXsHK27N13LfpmF_U3t4kNjPwm2/view?usp=drive_link),save to resume directory.
 ```commandline
 bash test.sh
 ```

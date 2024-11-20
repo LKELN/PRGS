@@ -1,31 +1,10 @@
-import logging
-import os
-import re
-
 import torch
 import torch.nn as nn
 from functools import partial
-
 from einops import rearrange
-from ptflops import get_model_complexity_info
-from timm.models.vision_transformer import VisionTransformer, _cfg, PatchEmbed, Block
-import argparse
-from timm.models.registry import register_model
-from timm.models.layers import trunc_normal_
-import numpy as np
-import torchvision
-import matplotlib.pyplot as plt
 from itertools import repeat
 import collections.abc
-import time
-import math
-from torch.nn import functional as F
 import torch.utils.model_zoo as model_zoo
-from parser_1 import parse_arguments
-from copy import deepcopy
-
-save_number = 0
-
 
 def max_min_norm_tensor(mat):
     v_min, _ = torch.min(mat, -1, keepdims=True)
@@ -189,7 +168,6 @@ class Projection(nn.Module):
             pos = self.peg(x)
             x = x + pos
             _, D, Hout, Wout = x.shape
-            # torch.save(x, "single.pt")
             x = x.reshape(B, N, D, Hout, Wout).flatten(3).transpose(-1, -2)
 
 
@@ -374,7 +352,6 @@ class GrapgRerank(nn.Module):
         """
         Hout, Wout = 30, 40
         for i in range(self.num_graph_layers):
-#             if i<3:
             x_rerank, Hout, Wout = self.fine2cor[i](x_rerank, Hout, Wout)
             x_rerank = self.selfnode_graph_layers[i](x_rerank)
             x_rerank = self.crossnode_graph_layers[i](x_rerank)
@@ -419,24 +396,3 @@ def getGcnRerank(args):
     return model
 
 
-if __name__ == "__main__":
-    args = parse_arguments()
-    device = "cuda"
-    model = getGcnRerank(args)
-    model.to(device)
-    query_global, candidate_global, x_rerank = torch.rand(1, 256), torch.rand(100, 256), torch.rand(1, 101, 1200, 131)
-    from thop import profile
-    # model_1=torch.load("/home/think/PycharmProjects/GCNcode/resume/CVPR23_DeitS_Rerank.pth")
-    query_global = query_global.to(device)
-    candidate_global = candidate_global.to(device)
-    x_rerank = x_rerank.to(device)
-    torch.cuda.synchronize()
-    time_start = time.time()
-
-    flops, params = profile(model, inputs=(query_global, candidate_global, x_rerank))
-    torch.cuda.synchronize()
-    time_end = time.time()
-    time_sum = time_end - time_start
-    print('FLOPs = ' + str(flops / 1000 ** 3) + 'G')
-    print('Params = ' + str(params / 1000 ** 2) + 'M')
-    print("run tims is {}".format(time_sum))

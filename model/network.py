@@ -13,12 +13,9 @@ from model.normalization import L2Norm
 import model.aggregation as aggregation
 from model.non_local import NonLocalBlock
 from model.GCNRerank_oringal import getGcnRerank
-from model.R2Former import R2Former
 from functools import partial
 import numpy as np
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
-# from matplotlib.patches import Circle
 from model.Deit import DistilledVisionTransformer, deit_small_distilled_patch16_224, deit_base_distilled_patch16_384
 
 # Pretrained models on Google Landmarks v2 and Places 365
@@ -135,18 +132,7 @@ class GeoLocalizationNetRerank(nn.Module):
         self.multi_out = args.num_local
         self.no_mask = args.num_local_nomask
         self.single = False
-        if args.rerank_model == 'r2former':
-            self.Reranker = R2Former(decoder_depth=6, decoder_num_heads=4,
-                                     decoder_embed_dim=32, decoder_mlp_ratio=4,
-                                     decoder_norm_layer=partial(nn.LayerNorm, eps=1e-6),
-                                     num_classes=2, num_patches=2 * self.multi_out,
-                                     input_dim=args.fc_output_dim, num_corr=5)
-        elif args.rerank_model == "GCNRerank":
-            self.Reranker = getGcnRerank(args)
-
-        else:
-            print('rerank_model not implemented!')
-            raise Exception
+        self.Reranker = getGcnRerank(args)
 
     def forward_ori(self, x):
         x = self.backbone(x)
@@ -334,15 +320,11 @@ class GeoLocalizationNetRerank(nn.Module):
             else:
                 local_features = self.local_head(output.detach().reshape(B * multi_out, -1)). \
                     reshape(B, multi_out, self.out_dim)
-#             local_features=local_features+x_xy+x_attention
             
             local_features = torch.cat([x_xy, x_attention, local_features], dim=2)
             
             order = order.unsqueeze(-1).expand(-1, -1, local_features.shape[2])
             local_features = local_features.scatter_(1, order[:, self.no_mask:], 0)
-            
-#             mask = last_map < 0.015
-#             local_features[mask]=0
             return self.backbone.l2_norm((x_cls + x_dist) / 2), local_features
 
     def forward(self, x):
@@ -512,11 +494,6 @@ def pos_resize(matrix, size):
     ratio = torch.sqrt(ori_dis / new_dis)
     center = new_matrix[:, :, size[0] // 2, size[1] // 2].unsqueeze(2).unsqueeze(3)
     new_matrix = (new_matrix - center) * ratio + center
-    # print(ratio,matrix.shape, new_matrix.shape,((matrix[:,:,H//2, W//2]-new_matrix[:,:,size[0]//2,size[1]//2])**2).sum(dim=1))
-    # print(((matrix[:,:,0,W//2]-matrix[:,:,H//2,W//2])**2).sum(dim=1),((new_matrix[:,:,0, size[1]//2]-new_matrix[:,:,size[0]//2,size[1]//2])**2).sum(dim=1))
-    # print(((matrix[:, :, H-1, W // 2] - matrix[:, :, H // 2, W // 2]) ** 2).sum(dim=1),
-    #       ((new_matrix[:, :, size[0]-1, size[1] // 2] - new_matrix[:, :, size[0] // 2, size[1] // 2]) ** 2).sum(dim=1))
-    # raise Exception
     return new_matrix
 
 

@@ -1,26 +1,13 @@
-# This code is only for reference, you may need to modify it to run on your machine.
-import os
-# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"  #
 import torch
 import torchvision
 import numpy as np
-import matplotlib.pyplot as plt
-# from matplotlib.patches import Circle
-from PIL import Image
-import torch.nn.functional as F
-from functools import partial
 import time
 import cupy as cp
-from numpy import linalg as LA
 import datasets_ws
 from model.network import GeoLocalizationNet, GeoLocalizationNetRerank
 from torch.utils.data.dataloader import DataLoader
 import util
 from tqdm import tqdm
-import test
-import random
-from ptflops import get_model_complexity_info
 
 base_transform = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
@@ -141,7 +128,7 @@ class Args():
         self.rerank_batch_size = 8
         self.efficient_ram_testing = False
         self.recall_values = [1, 5, 10, 20, 100]
-        self.rerank_model = 'r2former'
+        self.rerank_model = None
         self.num_local = 1200
         self.pretrain = 'imagenet'
         self.l2 = 'before_pool'

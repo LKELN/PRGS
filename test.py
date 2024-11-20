@@ -7,7 +7,6 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Subset
 import time
-import cv2
 from mapillary_sls_main.evaluate import eval_api, create_dummy_predictions
 
 
