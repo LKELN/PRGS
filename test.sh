@@ -1,0 +1,1 @@
+python3 -u train_reranker.py --backbone deit --aggregation=gem  --save_dir test --infer_batch_size 32 --num_local 1200 --num_local_nomask 1000  --resume  --fc_output_dim 256  --rerank_batch_size 2  --num_workers 4  --test --rerank_model GCNRerank   --dataset_name msls

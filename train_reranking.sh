@@ -1,0 +1,3 @@
+## train reranker with fixed (default) backbone and global mining
+python3 -u train_reranker.py  --backbone deit --aggregation=gem --dataset_name msls --mining global --neg_hardness 100  --resume ./resume/Deit_s.pth   --lr 0.0004  --fc_output_dim 256 --num_workers 4 --warmup 0 --optim adamw --local_dim 128 --epochs_num 50 --patience 3 --negs_num_per_query 18 --queries_per_epoch 50000 --cache_refresh_rate 10000 --train_batch_size 8 --infer_batch_size 64 --rerank_batch_size 4 --save_best 0 --rerank_model GCNRerank  --rerank_loss "ce"  --seed 42  --num_local_nomask 1000 --num_local 1200  --temperature 0.5  --num_graph_layers 3
+
